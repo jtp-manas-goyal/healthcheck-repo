@@ -1,4 +1,8 @@
 echo "This is the image tag to be used: $SHA"
+echo "SHA: $SHA"
+echo "ACCOUNT_ID: $ACCOUNT_ID"
+echo "REGION_ID: $REGION_ID"
+
 if aws lambda get-function --function-name healthcheck-lambda; then
   echo "Updating Lambda function code..."
   aws lambda update-function-code --function-name healthcheck-lambda \
