@@ -8,6 +8,6 @@ else
   aws lambda create-function --function-name healthcheck-lambda \
     --package-type Image \
     --code ImageUri=${ACCOUNT_ID}.dkr.ecr.${REGION_ID}.amazonaws.com/lambda-from-container-image:$SHA \
-    --role arn:aws:iam::${ACCOUNT_ID}:role/lambda-execution-role \
+    --role arn:aws:iam::${ACCOUNT_ID}:role/Roleforhealthchecklambdaecsupdate \
     --region ${REGION_ID}
 fi

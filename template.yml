@@ -61,6 +61,35 @@ Resources:
                   - logs:*
                 Resource: "*"
 
+  Roleforthelambda:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: Roleforhealthchecklambdaecsupdate
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service: 
+                - ecs.amazonaws.com
+                - ec2.amazonaws.com
+                - lambda.amazonaws.com
+            Action: 'sts:AssumeRole'
+
+      Policies:
+        - PolicyName: ECSFullAccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: 'Allow'
+                Action:
+                  - 'ecs:*'
+                  - 'ecr:*'
+                  - 'cloudwatch:*'
+                  - 'logs:*'
+                  - 'iam:*'
+                Resource: '*'
+
   # ECR repository 
   HealthCheckECRRepository:
     Type: AWS::ECR::Repository
@@ -106,8 +135,6 @@ Resources:
                   - echo "Running the custom shell script..."
                   - chmod +x scripts/create_or_update_lambda_function.sh   # Ensure the script is executable
                   - ./scripts/create_or_update_lambda_function.sh    
-                
-                 
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/amazonlinux2-x86_64-standard:5.0
@@ -147,7 +174,7 @@ Resources:
               Configuration:
                 # ConnectionArn: !GetAtt CheckGitHubConnection.ConnectionArn
                 ConnectionArn: !Ref CodeStarConnectionArn
-                FullRepositoryId: "JTP-Kyrios/Kyrios-Workmail-IaC-HealthCheck"
+                FullRepositoryId: "jtp-manas-goyal/healthcheck-repo"
                 BranchName: 'main'
                 DetectChanges: "true"
         - Name: 'Build'
