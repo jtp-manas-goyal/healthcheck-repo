@@ -129,7 +129,7 @@ Resources:
                   - echo "Uploading the docker image to AWS ECR"
                   - docker push ${ACCOUNT_ID}.dkr.ecr.${region}.amazonaws.com/${reponame}:latest
               
-                post_build:
+              post_build:
                 commands:
                   # Check if the Lambda function exists to update or create it
                   - echo "Running the custom shell script..."
