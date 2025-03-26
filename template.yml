@@ -1,0 +1,175 @@
+# Resources : IAM Role X 2 , ECR , S3 Bucket , Codepipeline , Codebuild
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Pipeline to deply the image to ECR
+
+Parameters:
+  CodeStarConnectionArn:
+    Type: String
+    Description: ARN of the CodeStar connection
+
+Resources:
+
+  # IAM Role for codeBuild
+  HealthCheckCodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: 'HealthCheckBuildServiceRole'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: 'codebuild.amazonaws.com'
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CodeBuildPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:*
+                  - codestar-connections:*
+                  - logs:*
+                  - s3:*
+                Resource: "*"
+
+  # IAM role for CodePipeline
+  HealthCheckPipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: 'codepipeline.amazonaws.com'
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: HealthcheckCodepipelineRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codestar-connections:* 
+                  - cloudformation:*
+                  - codebuild:*
+                  - s3:*
+                  - iam:PassRole
+                  - cloudwatch:*
+                  - logs:*
+                Resource: "*"
+
+  # ECR repository 
+  HealthCheckECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: healthcheck-playwright-repo
+
+  # Pipeline Artifact bucket.
+  PipelineArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: healthcheckartifactbucket
+
+  # Codebuild project
+  HealthCheckCodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: MyCodeBuildProject
+      Artifacts:
+        Type: CODEPIPELINE
+      Source: 
+        Type: CODEPIPELINE
+        BuildSpec: |
+            version: 0.2
+            phases:
+              pre_build:
+                commands:
+                  - echo "Logging in to ECR..."
+                  - ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+                  - aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${region}.amazonaws.com
+
+              build:
+                commands:
+                  - echo "Building the docker container."
+                  - docker buildx build --platform linux/amd64 --provenance=false -t healthcheckautrepo .
+                  - echo "Tagging the docker image "
+                  - docker tag healthcheckautrepo:latest ${ACCOUNT_ID}.dkr.ecr.${region}.amazonaws.com/${reponame}:latest
+                  - echo "Uploading the docker image to AWS ECR"
+                  - docker push ${ACCOUNT_ID}.dkr.ecr.${region}.amazonaws.com/${reponame}:latest
+              
+                post_build:
+                commands:
+                  # Check if the Lambda function exists to update or create it
+                  - echo "Running the custom shell script..."
+                  - chmod +x scripts/create_or_update_lambda_function.sh   # Ensure the script is executable
+                  - ./scripts/create_or_update_lambda_function.sh    
+                
+                 
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:5.0
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: region
+            Value: ap-northeast-1
+            Type: PLAINTEXT
+          - Name: reponame
+            Value: !Ref HealthCheckECRRepository
+            Type: PLAINTEXT
+      ServiceRole: !GetAtt HealthCheckCodeBuildServiceRole.Arn
+
+  
+
+  # Codepiepline 
+  HealthCheckCodePipeline:
+    Type: 'AWS::CodePipeline::Pipeline'
+    Properties:
+      Name: 'HealthCheckCodePipeline'
+      RoleArn: !GetAtt HealthCheckPipelineRole.Arn
+      ArtifactStore:
+        Type: 'S3'
+        Location: !Ref PipelineArtifactBucket
+      
+      Stages:
+        - Name: 'Source'
+          Actions:
+            - Name: 'SourceAction'
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Provider: CodeStarSourceConnection
+                Version: '1'
+              OutputArtifacts: 
+                - Name : SourceArtifact
+              Configuration:
+                # ConnectionArn: !GetAtt CheckGitHubConnection.ConnectionArn
+                ConnectionArn: !Ref CodeStarConnectionArn
+                FullRepositoryId: "JTP-Kyrios/Kyrios-Workmail-IaC-HealthCheck"
+                BranchName: 'main'
+                DetectChanges: "true"
+        - Name: 'Build'
+          Actions:
+            - Name: 'BuildAction'
+              ActionTypeId:
+                Category: 'Build'
+                Owner: 'AWS'
+                Provider: 'CodeBuild'
+                Version: '1'
+              InputArtifacts:
+                - Name : SourceArtifact
+              Configuration:
+                ProjectName: !Ref HealthCheckCodeBuildProject
+                # PrimarySource: SourceArtifact
+  
+
+
+Outputs:
+  ECRRepositoryUri:
+    Description: URI of the ECR Repository
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/healthcheck-image-repo:latest"
+    Export:
+      Name: ECRRepoURL
+  
