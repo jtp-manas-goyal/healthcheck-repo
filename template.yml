@@ -32,6 +32,7 @@ Resources:
                   - codestar-connections:*
                   - logs:*
                   - s3:*
+                  - lambda:*
                 Resource: "*"
 
   # IAM role for CodePipeline
