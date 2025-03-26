@@ -33,6 +33,7 @@ Resources:
                   - logs:*
                   - s3:*
                   - lambda:*
+                  - iam:*
                 Resource: "*"
 
   # IAM role for CodePipeline
