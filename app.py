@@ -350,7 +350,7 @@ class PlaywrightActions:
 
 # Test the PlaywrightActions with a set of actions
 def handler(event, context):
-    actions = json.loads(str(event["body"]))
+    actions = json.loads(str(event["actions"]))
    
     object = PlaywrightActions()
     object.initialize()
