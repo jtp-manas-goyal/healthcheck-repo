@@ -364,5 +364,6 @@ def handler(event, context):
         res = object.perform_actions(searchedWebsite)
     finally:
         object.teardown()  
-        
-    return res
+    
+    event.update({"result": res})
+    return event
