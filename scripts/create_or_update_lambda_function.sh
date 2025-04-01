@@ -11,6 +11,6 @@ else
     --code ImageUri=${ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/healthcheck-playwright-repo:latest \
     --role arn:aws:iam::${ACCOUNT_ID}:role/Roleforhealthchecklambdaecsupdate \
     --region ap-northeast-1 \
-    --memory-size 512 \
+    --memory-size 1024 \
     --timeout 180 \
 fi
