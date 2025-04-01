@@ -345,23 +345,18 @@ class PlaywrightActions:
         Result : {msg}\
         
         -------------------------------------------------------
-                            '''.format(isnot = ifsuccessfull , log = log , msg = result )                
+                            '''.format(isnot = ifsuccessfull , log = log , msg = result )              
         return mainstr
 
 # Test the PlaywrightActions with a set of actions
 def handler(event, context):
-    actions = json.loads(os.environ["actions"])
+    actions = event["actions"]
    
-
     object = PlaywrightActions()
-    print("Initializing Playwright...")
     object.initialize()
-    
     try:
-        print("Performing actions...")
         res = object.perform_actions(actions)
-        print(res)
     finally:
         object.teardown()  
-    
+        
     return res

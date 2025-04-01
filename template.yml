@@ -193,12 +193,4 @@ Resources:
                 ProjectName: !Ref HealthCheckCodeBuildProject
                 # PrimarySource: SourceArtifact
   
-
-
-Outputs:
-  ECRRepositoryUri:
-    Description: URI of the ECR Repository
-    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/healthcheck-image-repo:latest"
-    Export:
-      Name: ECRRepoURL
   
