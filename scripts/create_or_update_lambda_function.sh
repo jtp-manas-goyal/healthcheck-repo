@@ -4,6 +4,7 @@ if aws lambda get-function --function-name healthcheck-lambda; then
   echo "Updating Lambda function code..."
   aws lambda update-function-code --function-name healthcheck-lambda \
     --image-uri ${ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/healthcheck-playwright-repo:latest
+    
 else
   echo "Creating new Lambda function 'healthcheck-lambda'..."
   aws lambda create-function --function-name healthcheck-lambda \
