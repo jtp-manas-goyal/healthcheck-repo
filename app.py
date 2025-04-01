@@ -362,4 +362,4 @@ def handler(event, context):
     finally:
         object.teardown()  
         
-    return searchedWebsite
+    return res
