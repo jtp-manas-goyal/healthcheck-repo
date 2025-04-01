@@ -304,7 +304,8 @@ class PlaywrightActions:
         res = self.stringfyRes(results)
         
         linkofwebsite = (linkofwebsite[7:])
-        imgpath = f"/{self.linkofwebsite}/test.jpg"
+        print(linkofwebsite)
+        imgpath = f"/{linkofwebsite}/test.jpg"
         
         time.sleep(2)
         
