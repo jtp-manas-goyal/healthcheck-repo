@@ -305,7 +305,7 @@ class PlaywrightActions:
         
         linkofwebsite = (linkofwebsite[7:])
         print(linkofwebsite)
-        imgpath = f"{linkofwebsite}test.jpg"
+        imgpath = "test.jpg"
         
         time.sleep(2)
         
