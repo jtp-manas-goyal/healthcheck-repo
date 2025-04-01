@@ -12,5 +12,5 @@ else
     --role arn:aws:iam::${ACCOUNT_ID}:role/Roleforhealthchecklambdaecsupdate \
     --region ap-northeast-1 \
     --memory-size 1024 \
-    --timeout 180 \
+    --timeout 180 
 fi
