@@ -4,7 +4,7 @@
   "key3": "value3",
   "website": "https://bizsapo.ai.smrj.go.jp/",
   "actions": {
-    "actions": [
+    [
       {
         "action": "goto",
         "url": "https://bizsapo.ai.smrj.go.jp/",
