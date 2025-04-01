@@ -196,7 +196,8 @@ class PlaywrightActions:
     def file_upload(self , selector , type, errorval):
         pass
     
-    def perform_actions(self, actions):
+    def perform_actions(self, website_index):
+        actions = listOfAllActions[website_index]["actions"]["actions"]
         results = []
         for action in actions:
             
@@ -354,11 +355,11 @@ def handler(event, context):
     searchedWebsite = listOfWebsites.index(event["website"])
     
    
-    # object = PlaywrightActions()
-    # object.initialize()
-    # try:
-    #     res = object.perform_actions(actions)
-    # finally:
-    #     object.teardown()  
+    object = PlaywrightActions()
+    object.initialize()
+    try:
+        res = object.perform_actions(searchedWebsite)
+    finally:
+        object.teardown()  
         
     return searchedWebsite
