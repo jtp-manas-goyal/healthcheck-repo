@@ -197,6 +197,7 @@ class PlaywrightActions:
         pass
     
     def perform_actions(self, website_index):
+        linkofwebsite = listOfWebsites[website_index]
         actions = listOfAllActions[website_index]["actions"]["actions"]
         results = []
         for action in actions:
@@ -302,17 +303,17 @@ class PlaywrightActions:
         
         res = self.stringfyRes(results)
         
-        # self.linkofwebsite = (self.linkofwebsite[7:])
-        # imgpath = f"image/{self.linkofwebsite}/test.jpg"
+        linkofwebsite = (linkofwebsite[7:])
+        imgpath = f"image/{self.linkofwebsite}/test.jpg"
         
-        # time.sleep(2)
+        time.sleep(2)
         
-        # self.full_screenshot(imgpath=imgpath)
+        self.full_screenshot(imgpath=imgpath)
         
-        # with open(imgpath, "rb") as image_file:
-        #  encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+        with open(imgpath, "rb") as image_file:
+         encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
         
-        return ({"result" : res })
+        return ({"result" : res , "image" : encoded_string})
     
     def stringfyRes( self , results ):
         logs = [] 
