@@ -127,14 +127,16 @@ class PlaywrightActions:
             return f"Screenshot saved to {path}"
         except Exception as e:
             return f"Error in {errorval} step. \n error : {str(e)}"
-    
-    def full_screenshot(self , imgpath ):
+        
+    def full_screenshot(self, imgpath):
         try:
-            self.page.screenshot(path = imgpath , full_page = True)
-            return f"screenshot is saved on this path  {imgpath}. "
+            # Save the screenshot to the `/tmp` directory
+            tmp_imgpath = f"/tmp/{imgpath}"
+            self.page.screenshot(path=tmp_imgpath, full_page=True)
+            return tmp_imgpath
         except Exception as e:
-            return f"Error in the screenshot step. \n error : {str(e)}"
-            
+            print(f"Error in the screenshot step. \n error : {str(e)}")
+            return None
 
     def evaluate(self, script, errorval):
         try:
@@ -302,19 +304,18 @@ class PlaywrightActions:
                 results.append({"step" :errorval , "result" : result}) 
         
         res = self.stringfyRes(results)
+
+        imgpath = "test.png"
+        tmp_imgpath = self.full_screenshot(imgpath=imgpath)
+
+        if tmp_imgpath:
+            with open(tmp_imgpath, "rb") as image_file:
+                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+            os.remove(tmp_imgpath)
+        else:
+            encoded_string = None
         
-        linkofwebsite = (linkofwebsite[7:])
-        print(linkofwebsite)
-        imgpath = "test.jpg"
-        
-        time.sleep(2)
-        
-        self.full_screenshot(imgpath=imgpath)
-        
-        with open(imgpath, "rb") as image_file:
-         encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-        
-        return ({"result" : res , "image" : encoded_string})
+        return {"result": res, "image": encoded_string}
     
     def stringfyRes( self , results ):
         logs = [] 
