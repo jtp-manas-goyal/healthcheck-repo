@@ -4,6 +4,7 @@ import datetime
 import time
 import os
 import base64
+from action import listOfAllActions , listOfWebsites
 
 class PlaywrightActions:
     linkofwebsite = ""
@@ -350,13 +351,14 @@ class PlaywrightActions:
 
 # Test the PlaywrightActions with a set of actions
 def handler(event, context):
-    actions = json.loads(str(event["actions"]))
+    searchedWebsite = listOfWebsites.index(event["website"])
+    
    
-    object = PlaywrightActions()
-    object.initialize()
-    try:
-        res = object.perform_actions(actions)
-    finally:
-        object.teardown()  
+    # object = PlaywrightActions()
+    # object.initialize()
+    # try:
+    #     res = object.perform_actions(actions)
+    # finally:
+    #     object.teardown()  
         
-    return res
+    return searchedWebsite

@@ -5,7 +5,6 @@ listOfWebsites = [
 ]
 listOfAllActions =  [
     {
-        # 1 #the first website  bizsapo-chat
         "actions" : {
             "actions" : [
                 {"action" : "goto" , "url" : "https://bizsapo.ai.smrj.go.jp/" , "errorval" : 1} ,
@@ -26,7 +25,8 @@ listOfAllActions =  [
                 {"action" : "check_text" , "selector" : "//*[@id='chatArea']/div[6]/div[2]/div/p/p", "expected_text" : "起業は、やりたいことや夢が実現できる反面、リスクがあるのも事実だ。失敗はすべて自己責任だし、収入だってどうなるか分からない。それでも、起業する人がいるのは、リスクを超える魅力や成し遂げたい夢があるからだ。君にとっての起業の魅力や大変さを見極めて、起業がベストな選択肢なのかを判断するといいぞ。" , "errorval" : 4}
             ]
         }
-    }]
+    }
+    ]
 
 
 # To make listOfAllActions accessible, you can use it as a module-level variable.
