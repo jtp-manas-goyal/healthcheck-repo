@@ -109,7 +109,7 @@ Resources:
   HealthCheckCodeBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: MyCodeBuildProject
+      Name: HealthCheckCodeBuildProject
       Artifacts:
         Type: CODEPIPELINE
       Source: 
